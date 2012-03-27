@@ -33,8 +33,10 @@ module Machine
 
       # TODO: Add total-event limiting, and journal size limiting.
       def run(sourcecode)
-        # Prepend nil line for initial state capture.
-        sourcecode = "nil\n#{sourcecode}"
+        # The trace captures state before executing the traced event, so
+        # force one additional nil evaluation at the end to capture the
+        # final state.
+        sourcecode = "begin\n#{sourcecode}\nensure ; nil ; end"
 
         # This worked, but have not found out why for certain. Trying rescue the
         # exception outside of the eval did not work, and exceptions were rescued
@@ -42,7 +44,7 @@ module Machine
         sourcecode = <<-CODE
           begin
             # Offset starting line by -1 (0 = 1 - 1) to match what the user
-            # submitted, before we prepended a `nil` line.
+            # submitted, before we prepended a `begin` line.
             [ '>', eval(#{sourcecode.inspect}, binding, '~sourcecode~', 0).inspect ]
           rescue Exception
             # Use this form of rescue & global $! var, to prevent hoisting
