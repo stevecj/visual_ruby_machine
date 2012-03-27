@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <title>Visual Ruby Machine</title>
+  <style>
+    .sourcecode {height: 25em; width: 50em;}
+  </style>
+  <script src="/jquery.min.js"></script>
+  <script>
+    $(function(){
+      var oldcode = $('#sourcecode').val();
+      $('#sourcecode').keyup(function(){
+        var newcode = $('#sourcecode').val();
+        if(newcode == oldcode){ return; }
+        $.ajax( '/', {data: JSON.stringify({sourcecode: newcode}), type: 'POST'} );
+        oldcode = newcode;
+      });
+    });
+  </script>
+<head>
+</head>
+<body>
+  <h1>Visual Ruby Machine</h1>
+  <p>Type some Ruby code, and see what happens. Don&apos;t. This is far from bullet
+  proofed, so don't try anything unsafe, and don't host this for the public on
+  your Web server!</p>
+  <textarea class='sourcecode' id='sourcecode' name='sourcecode'></textarea>
+  <div id='status'></div>
+</body>
+</html>
